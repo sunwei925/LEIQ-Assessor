@@ -1,5 +1,6 @@
 <div align="center">
 
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=sunwei925/https://github.com/sunwei925/LEIQ-Assessor)
 [![GitHub stars](https://img.shields.io/github/stars/sunwei925/LEIQ-Assessor)](https://github.com/sunwei925/LEIQ-Assessor)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4%2B-brightgreen?logo=PyTorch)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/sunwei925/LEIQ-Assessor)
@@ -113,7 +114,7 @@ test_images/
 └── ...
 ```
 
-If `metadata.csv` is missing, all supported images (`png/jpg/jpeg/bmp/webp`) in `test_images/` are used and the file stem is taken as the `id`.
+> **Note:** Both the test images and `metadata.csv` under `test_images/` should be obtained from the [MLE dataset](https://github.com/CQUPT-HuBo90/MLEDataset).
 
 ---
 
@@ -132,7 +133,7 @@ Two checkpoints are released:
 | Model | Backbone | Input Size | Task | Download |
 |-------|----------|:---------:|------|:--------:|
 | `SigLIP2_384_Image` | ViT-B/16-SigLIP2 | 384×384 | Single-task (MOS) | [Baidu Yun](https://pan.baidu.com/s/19u6uNDDWKARMRVcAunQEuw) (code: `rpkv`) |
-| `SigLIP2_ViTG_384_Image_10splits` | ViT-SO400M/14-SigLIP2 | 378×378 | Multi-task (MOS + 6 attributes) | [Baidu Yun](https://pan.baidu.com/s/1n35i2y0aY5moLbtyVobX0w) (code: `rs6d`) |
+| `SigLIP2_ViTG_384_Image` | ViT-SO400M/14-SigLIP2 | 378×378 | Multi-task (MOS + 6 attributes) | [Baidu Yun](https://pan.baidu.com/s/1n35i2y0aY5moLbtyVobX0w) (code: `rs6d`) |
 
 After downloading, extract each archive into the repository root so the layout matches the structure shown at the end of this section.
 
@@ -170,9 +171,9 @@ python test_ensemble.py \
 | `--test_dir` | `test_images` | Directory of test images |
 | `--metadata_csv` | `test_images/metadata.csv` | Metadata CSV with `id`, `file_name` columns |
 | `--st_ckpt_dir` | `SigLIP2_384_Image` | Single-task checkpoint directory |
-| `--st_ckpt_name` | `SigLIP2_384_Image` | Single-task checkpoint filename prefix |
+| `--st_ckpt_name` | `SigLIP2_384_Image` | Single-task model name |
 | `--mt_ckpt_dir` | `SigLIP2_ViTG_384_Image_10splits` | Multi-task checkpoint directory |
-| `--mt_ckpt_name` | `SigLIP2_ViTG_384_Image_MT` | Multi-task checkpoint filename prefix |
+| `--mt_ckpt_name` | `SigLIP2_ViTG_384_Image_MT` | Multi-task model name |
 | `--n_splits` | `10` | Expected number of splits |
 | `--batch_size` | `16` | Inference batch size |
 | `--num_workers` | `4` | DataLoader workers |
@@ -189,7 +190,7 @@ Loads **one trained `.pth`** and scores every image in the test directory (no 10
 ```bash
 # Single-task model
 python test_single.py \
-    --model st \
+    --model SigLIP2_384_Image \
     --ckpt_path SigLIP2_384_Image/SigLIP2_384_Image_MLE_v0_ep30_SRCC0.92.pth \
     --test_dir test_images \
     --metadata_csv test_images/metadata.csv \
@@ -197,13 +198,13 @@ python test_single.py \
 
 # Multi-task model
 python test_single.py \
-    --model mt \
+    --model SigLIP2_ViTG_384_Image \
     --ckpt_path SigLIP2_ViTG_384_Image_10splits/SigLIP2_ViTG_384_Image_MT_MLE_v0_ep30_SRCC0.93.pth \
     --output_json result_single_mt.json
 
 # Explicitly specify the .mat (defaults to the .pth stem with .mat)
 python test_single.py \
-    --model st \
+    --model SigLIP2_384_Image \
     --ckpt_path path/to/xxx.pth \
     --mat_path path/to/xxx.mat \
     --output_json result_single.json
@@ -211,7 +212,7 @@ python test_single.py \
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--model` | `st` | Architecture: `st` (single-task, 384) / `mt` (multi-task, 378) |
+| `--model` | `SigLIP2_384_Image` | Architecture: `SigLIP2_384_Image` (single-task, 384) / `SigLIP2_ViTG_384_Image` (multi-task, 378) |
 | `--ckpt_path` | *(required)* | Path to a single trained `.pth` checkpoint |
 | `--mat_path` | `.pth` stem + `.mat` | Path to the `.mat` for logistic mapping |
 | `--test_dir` | `test_images` | Directory of test images |
@@ -232,19 +233,19 @@ Loads **one trained `.pth`** and scores **one image**, printing the result to th
 # Single-task model
 python test_one_image.py \
     --image_path test_images/xxx.png \
-    --model st \
+    --model SigLIP2_384_Image \
     --ckpt_path SigLIP2_384_Image/SigLIP2_384_Image_MLE_v0_ep30_SRCC0.92.pth
 
 # Multi-task model (also prints light/color/noise/exposure/nature/content_recovery)
 python test_one_image.py \
     --image_path test_images/xxx.png \
-    --model mt \
+    --model SigLIP2_ViTG_384_Image \
     --ckpt_path SigLIP2_ViTG_384_Image_10splits/SigLIP2_ViTG_384_Image_MT_MLE_v0_ep30_SRCC0.93.pth
 
 # Explicitly specify the .mat and clamp the output range
 python test_one_image.py \
     --image_path xxx.png \
-    --model st \
+    --model SigLIP2_384_Image \
     --ckpt_path path/to/xxx.pth \
     --mat_path path/to/xxx.mat \
     --clamp_to_range --min_mos 0 --max_mos 10
@@ -253,7 +254,7 @@ python test_one_image.py \
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--image_path` | *(required)* | Path to a single image |
-| `--model` | `st` | Architecture: `st` (single-task, 384) / `mt` (multi-task, 378) |
+| `--model` | `SigLIP2_384_Image` | Architecture: `SigLIP2_384_Image` (single-task, 384) / `SigLIP2_ViTG_384_Image` (multi-task, 378) |
 | `--ckpt_path` | *(required)* | Path to a single trained `.pth` checkpoint |
 | `--mat_path` | `.pth` stem + `.mat` | Path to the `.mat` for logistic mapping |
 | `--round` | `4` | Decimal places for MOS / attribute scores |

@@ -14,8 +14,8 @@ from test_ensemble import (
 )
 
 
-SINGLE_TASK = 'st'
-MULTI_TASK = 'mt'
+SINGLE_TASK = 'SigLIP2_384_Image'
+MULTI_TASK = 'SigLIP2_ViTG_384_Image'
 MODEL_CHOICES = (SINGLE_TASK, MULTI_TASK)
 
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--model', type=str, default=SINGLE_TASK,
                         choices=MODEL_CHOICES,
-                        help='which architecture to run: st (single-task) or mt (multi-task)')
+                        help='which architecture to run: SigLIP2_384_Image (single-task) or SigLIP2_ViTG_384_Image (multi-task)')
     parser.add_argument('--ckpt_path', type=str, required=True,
                         help='path to a single trained .pth checkpoint')
     parser.add_argument('--mat_path', type=str, default=None,
